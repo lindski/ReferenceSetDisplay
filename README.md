@@ -13,7 +13,7 @@ Where you want an alternative way to display reference set objects or you want t
 # Features
 - Allows developer to set a sort order for reference set objects
 
-# Configuration - IonRangeSlider (Context Object)
+# Configuration
 
 ## Source
 - **Association**: The reference set association to display items for.

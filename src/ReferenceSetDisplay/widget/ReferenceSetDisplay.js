@@ -1,3 +1,19 @@
+/*global logger*/
+/*
+    ReferenceSetDisplay
+    ========================
+
+    @file      : ReferenceSetDisplay.js
+    @version   : 1.1.0
+    @author    : Iain Lindsay
+    @date      : 2017-04-21
+    @copyright : AuraQ Limited 2017
+    @license   : Apache V2
+
+    Documentation
+    ========================
+    Alternative way to render a reference set 
+*/
 define([
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
@@ -13,10 +29,11 @@ define([
     "dojo/_base/lang",
     "dojo/text",
     "dojo/html",
+    "dojo/on",
     "dojo/_base/event",
 
     "dojo/text!ReferenceSetDisplay/widget/template/ReferenceSetDisplay.html"
-], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, widgetTemplate) {
+], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoOn, dojoEvent, widgetTemplate) {
     "use strict";
 
     return declare("ReferenceSetDisplay.widget.ReferenceSetDisplay", [ _WidgetBase, _TemplatedMixin ], {
@@ -78,7 +95,20 @@ define([
                     for(var i = 0; i< objs.length; i++){
                         var obj = objs[i];
                         var caption = obj.get(self.displayAttribute);
-                        dojoConstruct.place("<li class='rsdItem'><span class='rsdItemContent'>" + caption + "</span></li>", self.rsdListContainer,"last");
+                        var itemContent = dojoConstruct.toDom("<span class='rsdItemContent'>" + caption + "</span>");
+                        if(self.enableClickToRemove){
+                            var itemAnchor = dojoConstruct.toDom("<a href='#'></a>");
+                            var guid = obj.getGuid();
+                            dojoOn(itemAnchor, "click",function(evt){
+                                self._contextObj.removeReferences(self._reference,[guid]);                                
+                            })
+                            dojoConstruct.place(itemContent,itemAnchor);
+                            itemContent = itemAnchor;
+                        }
+                        var item = dojoConstruct.toDom("<li class='rsdItem'></li>");
+                        dojoConstruct.place(itemContent,item);
+
+                        dojoConstruct.place(item, self.rsdListContainer,"last");
                     }
 
                     mendix.lang.nullExec(callback); 

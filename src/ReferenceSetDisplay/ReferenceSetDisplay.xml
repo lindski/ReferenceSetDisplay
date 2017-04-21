@@ -51,5 +51,10 @@
                 </property>
             </properties>
         </property>
+        <property key="enableClickToRemove" type="boolean" defaultValue="false">
+            <caption>Enable Click to Remove</caption>
+            <category>Source</category>
+            <description>If true, removes the selected item when clicked.</description>
+        </property>
     </properties>
 </widget>

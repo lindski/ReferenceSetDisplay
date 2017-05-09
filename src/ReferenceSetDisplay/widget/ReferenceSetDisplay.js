@@ -4,9 +4,9 @@
     ========================
 
     @file      : ReferenceSetDisplay.js
-    @version   : 1.1.0
+    @version   : 1.1.1
     @author    : Iain Lindsay
-    @date      : 2017-04-21
+    @date      : 2017-05-09
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -97,11 +97,7 @@ define([
                         var caption = obj.get(self.displayAttribute);
                         var itemContent = dojoConstruct.toDom("<span class='rsdItemContent'>" + caption + "</span>");
                         if(self.enableClickToRemove){
-                            var itemAnchor = dojoConstruct.toDom("<a href='#'></a>");
-                            var guid = obj.getGuid();
-                            dojoOn(itemAnchor, "click",function(evt){
-                                self._contextObj.removeReferences(self._reference,[guid]);                                
-                            })
+                            var itemAnchor = self._getAnchorForItem(obj);
                             dojoConstruct.place(itemContent,itemAnchor);
                             itemContent = itemAnchor;
                         }
@@ -114,6 +110,19 @@ define([
                     mendix.lang.nullExec(callback); 
                 }
             });
+        },
+
+        _getAnchorForItem(obj) {
+            var itemAnchor = dojoConstruct.toDom("<a href='#'></a>");
+            var guid = obj.getGuid();
+            var self = this;
+            dojoOn(itemAnchor, "click",function(guid){
+
+                return function(evt){self._contextObj.removeReferences(self._reference,[guid]);}
+
+            }(guid))
+
+            return itemAnchor;
         },
 
         // Reset subscriptions.

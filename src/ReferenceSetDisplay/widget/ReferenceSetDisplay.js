@@ -4,9 +4,9 @@
     ========================
 
     @file      : ReferenceSetDisplay.js
-    @version   : 1.1.1
+    @version   : 1.1.2
     @author    : Iain Lindsay
-    @date      : 2017-05-09
+    @date      : 2017-05-17
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -112,15 +112,15 @@ define([
             });
         },
 
-        _getAnchorForItem(obj) {
+        _getAnchorForItem : function(obj) {
             var itemAnchor = dojoConstruct.toDom("<a href='#'></a>");
             var guid = obj.getGuid();
             var self = this;
-            dojoOn(itemAnchor, "click",function(guid){
+            dojoOn(itemAnchor, "click",function(objGuid){
 
-                return function(evt){self._contextObj.removeReferences(self._reference,[guid]);}
+                return function(evt){self._contextObj.removeReferences(self._reference,[objGuid]);}
 
-            }(guid))
+            }(guid));
 
             return itemAnchor;
         },

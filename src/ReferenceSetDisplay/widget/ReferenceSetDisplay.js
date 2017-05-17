@@ -4,7 +4,7 @@
     ========================
 
     @file      : ReferenceSetDisplay.js
-    @version   : 1.1.2
+    @version   : 1.1.3
     @author    : Iain Lindsay
     @date      : 2017-05-17
     @copyright : AuraQ Limited 2017
@@ -45,8 +45,8 @@ define([
         // Internal variables.
         _handles: null,
         _contextObj: null,
-        _sortParams: null,
         _reference : null,
+        _entity : null,
 
         constructor: function () {
             this._handles = [];
@@ -55,14 +55,7 @@ define([
         postCreate: function () {
             logger.debug(this.id + ".postCreate");
             this._reference = this.referenceSetAssociation.split('/')[0];
-
-            // issues with the sort parameters being persisted between widget instances mean we set the sort array to empty.
-            this._sortParams = [];
-            // create our sort order array
-            for(var i=0;i< this._sortContainer.length;i++) {
-                var item = this._sortContainer[i];
-                this._sortParams.push([item.sortAttribute, item.sortOrder]); 
-            }
+            this._entity = this.referenceSetAssociation.split('/')[1];
         },
 
         update: function (obj, callback) {
@@ -86,15 +79,29 @@ define([
             var self = this;
             mx.data.get({
                 guids: this._contextObj.getReferences(this._reference),
-                filter: {
-                    sort: this._sortParams
-                },
                 callback: function(objs){
+                    var dataArray = objs.map(function(o){
+                        var data = {};
+                        data.guid = o.getGuid();
+                        data.caption = o.get(self.displayAttribute);
+                        if(self.sortAttribute){
+                            data.sortIndex = parseInt(o.get(self.sortAttribute));
+                        }
+
+                        return data;
+                    });
+
+                    if(self.sortAttribute){
+                        dataArray.sort(function(a,b){
+                                return a.sortIndex - b.sortIndex;
+                        });
+                    }
+
                     dojoConstruct.empty(self.rsdListContainer);
 
-                    for(var i = 0; i< objs.length; i++){
-                        var obj = objs[i];
-                        var caption = obj.get(self.displayAttribute);
+                    for(var i = 0; i< dataArray.length; i++){
+                        var obj = dataArray[i];
+                        var caption = obj.caption;
                         var itemContent = dojoConstruct.toDom("<span class='rsdItemContent'>" + caption + "</span>");
                         if(self.enableClickToRemove){
                             var itemAnchor = self._getAnchorForItem(obj);
@@ -114,7 +121,7 @@ define([
 
         _getAnchorForItem : function(obj) {
             var itemAnchor = dojoConstruct.toDom("<a href='#'></a>");
-            var guid = obj.getGuid();
+            var guid = obj.guid;
             var self = this;
             dojoOn(itemAnchor, "click",function(objGuid){
 

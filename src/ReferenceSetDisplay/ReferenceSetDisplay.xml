@@ -32,5 +32,11 @@
             <category>Source</category>
             <description>If true, removes the selected item when clicked.</description>
         </property>
+        <property key="onClickMicroflow" type="microflow" required="false">
+            <caption>On Click Microflow</caption>
+            <category>Source</category>
+            <description>If click to remove is enabled, an optional microflow to run when item is clicked</description>
+            <returnType type="Void"/>
+        </property>
     </properties>
 </widget>

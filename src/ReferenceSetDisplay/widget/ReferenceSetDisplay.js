@@ -4,7 +4,7 @@
     ========================
 
     @file      : ReferenceSetDisplay.js
-    @version   : 1.1.3
+    @version   : 1.2.0
     @author    : Iain Lindsay
     @date      : 2017-05-17
     @copyright : AuraQ Limited 2017
@@ -125,7 +125,13 @@ define([
             var self = this;
             dojoOn(itemAnchor, "click",function(objGuid){
 
-                return function(evt){self._contextObj.removeReferences(self._reference,[objGuid]);}
+                return function(evt){
+                    self._contextObj.removeReferences(self._reference,[objGuid]);
+
+                    if( self.onClickMicroflow ) {
+                        self._execMf(self._contextObj.getGuid(), self.onClickMicroflow);
+                    }
+                }
 
             }(guid));
 
@@ -162,6 +168,27 @@ define([
 
                 this._handles = [ objectHandle, referenceHandle ];
             }
+        },
+
+        _execMf: function (guid, mf, cb) {
+            if (guid && mf) {
+                mx.data.action({
+                    params: {
+                        applyto: 'selection',
+                        actionname: mf,
+                        guids: [guid]
+                    },
+                    callback: function (objs) {
+                        if (cb) {
+                            cb(objs);
+                        }
+                    },
+                    error: function (e) {
+                        logger.error('Error running Microflow: ' + e);
+                    }
+                }, this);
+            }
+
         }
     });
 });
